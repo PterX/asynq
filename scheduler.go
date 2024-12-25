@@ -301,8 +301,10 @@ func (s *Scheduler) Shutdown() {
 	s.wg.Wait()
 
 	s.clearHistory()
-	if err := s.client.Close(); err != nil {
-		s.logger.Errorf("Failed to close redis client connection: %v", err)
+	if !s.client.sharedConnection {
+		if err := s.client.Close(); err != nil {
+			s.logger.Errorf("Failed to close redis client connection: %v", err)
+		}
 	}
 	s.logger.Info("Scheduler stopped")
 }
